@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inicio</title>
+
+    <!-- Vinculando el CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    
+  </head>
+
+  <!-- Cuerpo de la pagina -->
+  <body onload = " ObtenerDatosJugadores(),PresionarBoton(),CargarUsuario()" id="fondo">
+   
+
+    <!-- CON ESTO SE MUESTRA QUIEN ESTA LOGEADO -->
+    <h1 style="margin-bottom: 30px; float:left; width:60%; color: white;">Pagina de Inicio </h1>
+    <div  id="logeado"> 
+
+    </div>
+
+    <!-- BUSCADOR -->
+    <div style = "width: 100%; padding-bottom: 25px; float: left;">
+        <!-- Buscador -->
+        <div style = "width: 60%; padding-left: 25px; float: left;">
+            
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">Buscar:</span>
+                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping" id="nombre">
+            </div>
+        </div>  
+        <!-- Para elegir que tipo de busqueda se realizara -->
+        <div style = "width: 20%; padding-left: 10px; float: left;">
+            <!-- Modificador de Opciones -->
+            <select class="form-select" aria-label="Default select example" id="op">
+                <option selected>Abrir para seleccionar opcion de busqueda</option>
+                <option value="1">Nombre</option>
+                <option value="2">Seleccion</option>
+                <option value="3">Region</option>
+            </select>
+        </div>
+        <!-- BOTOM para realizar la busqueda -->
+        <div style = "width:20%; padding-left: 10px; float: left;">
+            <button onclick="PresionarBoton()" type="button" class="btn btn-dark">Buscar</button>
+        </div>
+    </div>
+    
+    <!-- Seccion general donde aparecen todas las tarjetas  -->
+    <div style = " margin-bottom: 30px ">
+        <div id="stikersNombre">
+            
+        </div> 
+    </div>
+
+    <!-- BOTON PARA REGRESAR AL LOGIN  --> 
+    <div style = "width:100%; margin-bottom: 30px;  margin-left: 90%; float: left;">
+        <button onclick="BotonSalir()" type="button" class="btn btn-danger">SALIR</button>
+    </div> 
+
+    <!-- Funciones -->
+    <script>
+        function ObtenerDatosJugadores(){
+            var AllStikers = document.querySelector('#stikersNombre')
+            var datos = []
+            fetch('http://localhost:4000/Jugadores',{
+                method: 'GET',         //Se elimina post y se coloca get
+                headers:{       //Tipo de contenido 
+                    'Content-Type': 'application/json',         //aplicacion de tipo JSON
+                    'access-Control-Allow-Orifin': '*',}})      //Cualquier servidor puede responder
+                    //fin del fetch
+                .then(res => res.json()) //condincionales: la respuesta del fetch se combierte a un json
+                .catch(err => {         //en caso de error, se muestra un error en consola junto a un alert
+                    console.error('Error:',err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                //terminan los casos posibles
+                .then(response => {     //segundo then: es lo que hara con los datos obtenidos en el then anterior 
+
+                    for(var i = 0; i < response.length; i++){
+                        datos[i] = `
+                        <div class="card text-bg-dark mb-3" style="width: 15%; box-shadow: 0px 1px 4px #7FFFD4; margin-left: 10px; float: left; ">
+                            <div class="card-header">${response[i].Nombre + " " + response[i].Apellido}</div>
+                            <div>
+                              <img for="imagen" id="imagen" src="${response[i].Imagen}" class="card-img-top">  
+                              <h6 class="card-title">${"Seleccion: " + response[i].Seleccion}</h6>
+                              <h6 class="card-title">${"Dorsal: " + response[i].Numero}</h6>
+                              <h6 class="card-title">${"Region: " + response[i].Region}</h6>
+                            </div>
+                        </div>
+                        `
+                    }
+                    AllStikers.innerHTML = datos
+                }) 
+        }
+
+        function PresionarBoton(){
+            var nombre = document.querySelector('#nombre').value
+            var opcion = document.querySelector('#op').value
+
+            //Decoracion
+            var ilustra = document.querySelector('#fondo')
+            var char = ''
+          
+            //Cadena de opciones dependiendo de la seleccion elegida 
+            switch(nombre){
+                case "Argentina":
+                    document.querySelector('#fondo').style = `background-image: url("https://i.pinimg.com/564x/de/f1/27/def1279b2b41ea9b4e63c35ca5e7562d.jpg"); `
+                    break;
+                case "Francia": 
+                    document.querySelector('#fondo').style = `background-image: url("https://i.pinimg.com/564x/4b/38/a8/4b38a8bbe3e1ec3d5fc268abb4378899.jpg");`
+                    break;
+                case "Portugal": 
+                    document.querySelector('#fondo').style = `background-image: url("https://i.pinimg.com/564x/13/08/68/130868c2ea23265ecaa32f8566493190.jpg");`
+                    break;
+                case "Alemania": 
+                    document.querySelector('#fondo').style = `background-image: url("https://i.pinimg.com/564x/c8/e0/64/c8e064f5306576a4bfc65fade4c21432.jpg");`
+                    break;
+                case "España": 
+                    document.querySelector('#fondo').style = `background-image: url("https://i.pinimg.com/564x/50/25/29/502529bb1763a62c3e734f822a525d48.jpg");`
+                    break;
+                default: 
+                    document.querySelector('#fondo').style = `background-color:    #322B2B;`
+
+            }
+
+            //Cadena de opciones dependiendo del tipo de busqueda que desee realizar el cliente 
+            switch(opcion){
+                case "1":
+                    var stiker = document.querySelector('#stikersNombre')
+                    var dato = ''
+
+                    ////Buscar este jugador
+                    fetch(`http://localhost:4000/Jugadores/${nombre}`,{
+                        method: 'GET',         //Se elimina post y se coloca get
+                        headers:{       //Tipo de contenido 
+                            'Content-Type': 'application/json',         //aplicacion de tipo JSON
+                            'access-Control-Allow-Orifin': '*',}})      //Cualquier servidor puede responder
+                            //fin del fetch
+                        .then(res => res.json()) //condincionales: la respuesta del fetch se combierte a un json
+                        .catch(err => {         //en caso de error, se muestra un error en consola junto a un alert
+                            console.error('Error:',err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        //terminan los casos posibles
+                        .then(response => {     //segundo then: es lo que hara con los datos obtenidos en el then anterior 
+                                dato = `
+                                <div class="card text-bg-dark mb-3" style="width: 15%; box-shadow: 0px 1px 4px #B72C2C; margin-left: 10px; float: left; ">
+                                    <div class="card-header">${response.Nombre + " " + response.Apellido}</div>
+                                    <div>
+                                      <img for="imagen" id="imagen" src="${response.Imagen}" class="card-img-top">  
+                                      <h6 class="card-title">${"Seleccion: " + response.Seleccion}</h6>
+                                      <h6 class="card-title">${"Dorsal: " + response.Numero}</h6>
+                                      <h6 class="card-title">${"Region: " + response.Region}</h6>
+                                    </div>
+                                </div>
+                                `
+                            
+                            stiker.innerHTML = dato
+                            alert(response.Mensaje)
+                        }) 
+                
+                    break;
+                case "2":
+                    var stiker1 = document.querySelector('#stikersNombre')    
+                    var datos = []
+
+                    ////Buscar esta Seleccion
+                    fetch(`http://localhost:4000/Jugadores/Selecciones/${nombre}`,{
+                        method: 'GET',         
+                        headers:{       //Tipo de contenido 
+                            'Content-Type': 'application/json',         //aplicacion de tipo JSON
+                            'access-Control-Allow-Orifin': '*',}})      //Cualquier servidor puede responder
+                            //fin del fetch
+                        .then(res => res.json()) //condincionales: la respuesta del fetch se combierte a un json
+                        .catch(err => {         //en caso de error, se muestra un error en consola junto a un alert
+                            console.error('Error:',err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        //terminan los casos posibles
+                        .then(response => {     //segundo then: es lo que hara con los datos obtenidos en el then anterior 
+                            if(response.Mensaje == "No se encontro dicha Seleccion"){
+                                alert(response.Mensaje)
+                            }else{
+                                alert("Busqueda exitosa")
+                            }
+                            //for Para guardar los datos en tarjetas
+                            for(var i = 0; i < response.length; i++){
+                                datos[i] = `
+                                <div class="card text-bg-dark mb-3" style="width: 15%; box-shadow: 0px 1px 4px #B72C2C; margin-left: 10px; float: left; ">
+                                    <div class="card-header">${response[i].Nombre + " " + response[i].Apellido}</div>
+                                    <div>
+                                      <img for="imagen" id="imagen" src="${response[i].Imagen}" class="card-img-top">  
+                                      <h6 class="card-title">${"Seleccion: " + response[i].Seleccion}</h6>
+                                      <h6 class="card-title">${"Dorsal: " + response[i].Numero}</h6>
+                                      <h6 class="card-title">${"Region: " + response[i].Region}</h6>
+                                    </div>
+                                </div>
+                                `
+                            }
+                            stiker1.innerHTML = datos
+                       
+
+                            
+                        }) 
+                
+                    break;
+                case "3": 
+                    var stiker1 = document.querySelector('#stikersNombre')
+                    var datos = []
+                    //este direccion regresara el endpoint del backend donde esta los jugadores por region 
+                    fetch(`http://localhost:4000/Jugadores/Regiones/${nombre}`,{
+                        method: 'GET',         //Se elimina post y se coloca get
+                        headers:{       //Tipo de contenido 
+                            'Content-Type': 'application/json',         //aplicacion de tipo JSON
+                            'access-Control-Allow-Orifin': '*',}})      //Cualquier servidor puede responder
+                            //fin del fetch
+                        .then(res => res.json()) //condincionales: la respuesta del fetch se combierte a un json
+                        .catch(err => {         //en caso de error, se muestra un error en consola junto a un alert
+                            console.error('Error:',err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        //terminan los casos posibles
+                        .then(response => {     //segundo then: es lo que hara con los datos obtenidos en el then anterior 
+                            
+                            //para las alertas
+                            if(response.Mensaje == "No se encontro dicha Region"){
+                                alert(response.Mensaje)
+                            }else{
+                                alert("Busqueda exitosa")
+                            }
+
+                            for(var i = 0; i < response.length; i++){
+                                datos[i] = `
+                                <div class="card text-bg-dark mb-3" style="width: 15%; box-shadow: 0px 1px 4px #7FFFD4; margin-left: 10px; float: left; ">
+                                    <div class="card-header">${response[i].Nombre + " " + response[i].Apellido}</div>
+                                    <div>
+                                      <img for="imagen" id="imagen" src="${response[i].Imagen}" class="card-img-top">  
+                                      <h6 class="card-title">${"Seleccion: " + response[i].Seleccion}</h6>
+                                      <h6 class="card-title">${"Dorsal: " + response[i].Numero}</h6>
+                                      <h6 class="card-title">${"Region: " + response[i].Region}</h6>
+                                    </div>
+                                </div>
+                                `
+                            }
+                            stiker1.innerHTML = datos
+                        }) 
+                    break;    
+            }
+        }
+
+        function CargarUsuario(){
+            var usuarioLogeado = sessionStorage.buscar
+            var h1 = document.querySelector('#logeado')
+            cadena = ''
+
+          
+            
+            fetch(`http://localhost:4000/Usuarios/${usuarioLogeado}`,{
+                method: 'GET',         //Se elimina post y se coloca get
+                headers:{       //Tipo de contenido 
+                    'Content-Type': 'application/json',         //aplicacion de tipo JSON
+                    'access-Control-Allow-Orifin': '*',}})      //Cualquier servidor puede responder
+                    //fin del fetch
+                .then(res => res.json()) //condincionales: la respuesta del fetch se combierte a un json
+                .catch(err => {         //en caso de error, se muestra un error en consola junto a un alert
+                    console.error('Error:',err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                //terminan los casos posibles
+                .then(response => {     //segundo then: es lo que hara con los datos obtenidos en el then anterior 
+                    
+                    cadena = `<h1 style="margin-bottom: 30px; float:left; width:40%; color: white; ">${"Usuario Logeado: " + response.usuario}</h1>`
+                    h1.innerHTML = cadena
+                    
+                }) 
+        }
+
+        function BotonSalir(){
+            location.href = "Pagina.html"
+        }
+    </script>
+
+    <!-- Vinculando el JS de bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+  </body>
+</html>
